@@ -11,6 +11,9 @@ function MetaInput(props) {
     }
 
     function addMetaHandler() {
+        if (inputMetaText.trim().length === 0) {
+            return;
+        }
         props.onAddMeta(inputMetaText);
         setInputMetaText('');
     }

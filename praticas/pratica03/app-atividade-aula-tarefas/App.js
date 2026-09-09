@@ -1,65 +1,91 @@
-
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
-import { rotulo_btn_cadastro_meta } from './mensagens';
-import { rotulo_input_meta } from './mensagens';
-import { useState } from 'react';
+import { StyleSheet, View, Image, Text } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import MetasList from './components/MetasList';
+import MetaInput from './components/MetasInput';
 
 export default function App() {
-  const [inputMetaText, setInputMetaText] = useState('');
+
   const [metas, setMetas] = useState([]);
 
-function metaInputHandler(inputText){
-  setInputMetaText (inputText);
-}
-function adicionarMetaHandler(){
-  setMetas([...metas, inputMetaText]);
-}
-  return (
-    <View style={styles.mainContainer}>
-      <View style={{flexDirection: 'row', justifyContent: 'space-between', flex:1}}>
-        <View style={{width:'65%'}}>
-          <TextInput onChangeText={metaInputHandler} style={styles.inputText} placeholder={rotulo_input_meta} />
-        </View>
-        <View style= {{width:'30%'}}>
-          <Button onPress={adicionarMetaHandler} title={rotulo_btn_cadastro_meta} />
-        </View>
-      </View>
+  // Carrega a lista salva quando o app abre
+  useEffect(() => {
+    async function carregarMetas() {
+      const metasSalvas = await AsyncStorage.getItem('listaMetas');
+      if (metasSalvas) {
+        setMetas(JSON.parse(metasSalvas));
+      }
+    }
+    carregarMetas();
+  }, []);
 
-      <View style={styles.metaContainer}>
-        {metas.map((meta, index)=><Text style={styles.item} key={index}>{meta}</Text>)}
-      </View>
-    </View>
+  // Salva a lista toda vez que ela mudar
+  useEffect(() => {
+    AsyncStorage.setItem('listaMetas', JSON.stringify(metas));
+  }, [metas]);
+
+  function adicionarMetaHandler(inputMeta) {
+    const novaMeta = { id: Math.random().toString(), texto: inputMeta };
+    setMetas([...metas, novaMeta]);
+  }
+
+  function deletarMetaHandler(id) {
+    const novasMetas = metas.filter(meta => meta.id !== id);
+    setMetas(novasMetas);
+  }
+
+  return (
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.imageContainer}>
+  <Image
+    source={require('./assets/logo.png.png')}
+    style={styles.logo}
+  />
+  <Text style={styles.titulo}>Minhas Metas</Text>
+</View>
+
+        <View style={styles.mainContainer}>
+          <MetaInput onAddMeta={adicionarMetaHandler} />
+          <View style={styles.metaContainer}>
+            <MetasList
+              array={metas}
+              onDeleteItem={deletarMetaHandler}
+            />
+          </View>
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
+  },
+  imageContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
   },
-
+  logo: {
+    width: 50,
+    height: 50,
+  },
+  titulo: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginLeft: 10,
+  },
   mainContainer: {
-    padding: 30,
     flex: 1,
-    flexDirection: 'column'
+    paddingTop: 16,
+    paddingHorizontal: 16,
   },
-
-  inputText: {
-    borderColor: "#CCCCCC",
-    borderWidth: 1,
-  },
-
   metaContainer: {
-    flex:1
+    flex: 1,
+    marginTop: 16,
   },
-
-  item: {
-    margin: 8,
-    borderRadius: 5,
-    padding: 10,
-    backgroundColor: 'lightblue'
-  }
-
 });
