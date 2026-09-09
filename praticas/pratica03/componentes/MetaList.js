@@ -1,0 +1,22 @@
+import { View, Text, StyleSheet } from 'react-native';
+
+function MetaList(props) {
+    return (
+        <View>
+            {props.array.map((meta, index) => (
+                <Text key={index} style={styles.item}>{meta}</Text>
+            ))}
+        </View>
+    );
+}
+
+export default MetaList;
+
+const styles = StyleSheet.create({
+    item: {
+        margin: 8,
+        borderRadius: 5,
+        padding: 10,
+        backgroundColor: 'lightblue',
+    }
+});
