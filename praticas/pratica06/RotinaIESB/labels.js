@@ -1,0 +1,9 @@
+export const tituloApp = 'RotinaIESB';
+export const placeholderCompromisso = 'Digite um compromisso...';
+export const botaoAdicionar = 'Adicionar';
+export const tituloLista = 'Meus Compromissos';
+export const listaVazia = 'Nenhum compromisso cadastrado ainda.';
+export const textoContadorPrefixo = 'pendentes';
+export const alertaTituloVazio = 'Atenção';
+export const alertaMensagemVazio = 'Digite um compromisso antes de adicionar.';
+export const botaoRemover = 'Remover';
